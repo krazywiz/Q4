@@ -43,7 +43,7 @@ idAI::idAI
 */
 idAI::idAI ( void ) {
 	projectile_height_to_distance_ratio = 1.0f;
-
+	tapped					= false; // I added this
 	aas						= NULL;
 	aasSensor				= NULL;
 	aasFind					= NULL;
@@ -5149,3 +5149,8 @@ bool idAI::CheckDeathCausesMissionFailure( void )
 	}
 	return false;
 }
+
+void idAI::tap()
+{
+	tapped = true;
+	}

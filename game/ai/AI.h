@@ -431,11 +431,13 @@ class rvAITether;
 class idAI : public idActor {
 friend class rvAIManager;
 friend class idAASFindAttackPosition;
+
 public:
 	CLASS_PROTOTYPE( idAI );
 
 							idAI();
 							~idAI();
+
 
 	void					Save							( idSaveGame *savefile ) const;
 	void					Restore							( idRestoreGame *savefile );
@@ -480,6 +482,8 @@ public:
 
 
 public:
+	
+	void					tap();// turns tapped to true
 
 	idLinkList<idAI>		simpleThinkNode;
 
@@ -930,7 +934,7 @@ public:
 	void					SetScript						( const char* scriptName, const char* funcName );
 
 private:
-
+	bool tapped = false; //this is what turns the strog to my side
 	bool					ScriptedBegin					( bool endWithIdle, bool allowDormant = false );
 	void					ScriptedEnd						( void );
 
@@ -1065,6 +1069,8 @@ public:
 
 private:
 	
+	
+
 	// Orphaned events
 	void					Event_ClosestReachableEnemyOfEntity	( idEntity *team_mate );
 	void					Event_GetReachableEntityPosition	( idEntity *ent );

@@ -4,7 +4,8 @@
 typedef enum {
 	AITEAM_MARINE,
 	AITEAM_STROGG,
-	AITEAM_NUM
+	AITEAM_NUM,
+	AITEAM_TAPPED
 } aiTeam_t;
 
 typedef enum {

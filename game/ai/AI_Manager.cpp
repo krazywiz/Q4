@@ -355,6 +355,8 @@ idActor* rvAIManager::GetEnemyTeam ( aiTeam_t team ) {
 			return teams[AITEAM_STROGG].Next();
 		case AITEAM_STROGG:
 			return teams[AITEAM_MARINE].Next();
+		case AITEAM_TAPPED:
+			return teams[AITEAM_TAPPED].Next(); //added this team
 	}
 	return NULL;		
 }

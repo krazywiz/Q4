@@ -689,9 +689,9 @@ stateResult_t idAI::State_Killed ( const stateParms_t& parms ) {
 	animator.ClearAllAnims ( gameLocal.time, 0 );
 
 	if( spawnArgs.GetBool ( "remove_on_death" )  ){
-		PostState ( "State_Remove" );
+		//PostState ( "State_Remove" );
 	} else { 
-		PostState ( "State_Dead" );
+		//PostState ( "State_Dead" );
 	}
 	
 	return SRESULT_DONE;
@@ -709,21 +709,21 @@ stateResult_t idAI::State_Dead ( const stateParms_t& parms ) {
 		if ( burnDelay > 0.0f ) {
 			if( fl.quickBurn )	{
 				StopRagdoll();
-				PostState ( "State_Burn", SEC2MS(0.05f) );
+				//PostState ( "State_Burn", SEC2MS(0.05f) );
 			} else if ( spawnArgs.GetString( "fx_burn_lightning", NULL ) ) {
 				lightningNextTime = 0;
 				lightningEffects = 0;
-				PostState ( "State_LightningDeath", SEC2MS(burnDelay) );
+				//PostState ( "State_LightningDeath", SEC2MS(burnDelay) );
 			} else {
-				PostState ( "State_Burn", SEC2MS(burnDelay) );
+				//PostState ( "State_Burn", SEC2MS(burnDelay) );
 			}
 		}
 		float removeDelay = SEC2MS ( spawnArgs.GetFloat ( "removeDelay" ) );
 		if ( removeDelay >= 0.0f ) {
-			PostState ( "State_Remove", removeDelay );
+			//PostState ( "State_Remove", removeDelay );
 		}
 	} else {
-		PostState ( "State_Remove" );
+		//PostState ( "State_Remove" );      this ensure the corpses don't dissapear
 	}
 		
 	return SRESULT_DONE;
