@@ -117,7 +117,9 @@ class idActor : public idAFEntity_Gibbable {
 public:
 	CLASS_PROTOTYPE( idActor );
 
+	
 	int						team;
+	void					changeTeam();// added this
 	idLinkList<idActor>		teamNode;
 	int						rank;				// monsters don't fight back if the attacker's rank is higher
 	idMat3					viewAxis;			// view axis of the actor

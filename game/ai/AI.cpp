@@ -47,7 +47,7 @@ idAI::idAI ( void ) {
 	aas						= NULL;
 	aasSensor				= NULL;
 	aasFind					= NULL;
-
+	team = AITEAM_TAPPED;
 	lastHitCheckResult		= false;
 	lastHitCheckTime		= 0;
 	lastAttackTime			= 0;
@@ -158,6 +158,17 @@ idAI::~idAI() {
 	aiManager.RemoveTeammate ( this );
 	SetPhysics( NULL );
 }
+/*
+=====================
+idAI::change stuff 
+=====================
+*/
+void idAI::changeTeam()
+{
+
+	idAI::team = AITEAM_TAPPED;
+}
+
 
 /*
 =====================
@@ -615,8 +626,8 @@ void idAI::Spawn( void ) {
 
 	// Initialize the non saved spawn args
 	InitNonPersistentSpawnArgs ( );	
-
-	spawnArgs.GetInt(	"team",					"1",		team );
+	
+	spawnArgs.GetInt(	"team",					"1",		team ); //changed team to 0;
 	spawnArgs.GetInt(	"rank",					"0",		rank );
 
 	animPrefix = spawnArgs.GetString ( "animPrefix", "" );

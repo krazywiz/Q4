@@ -3223,6 +3223,14 @@ void idActor::Event_IdleAnim( int channel, const char *animname ) {
 	idThread::ReturnInt( true );
 }
 
+
+
+
+void idActor::changeTeam() //added this
+{
+	team = AITEAM_TAPPED;
+}
+
 /*
 ================
 idActor::Event_SetSyncedAnimWeight

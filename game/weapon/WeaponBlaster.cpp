@@ -95,7 +95,7 @@ bool rvWeaponBlaster::UpdateAttack ( void ) {
 	// Clear fire forced
 	if ( fireForced ) {
 		if ( !wsfl.attack ) {
-			fireForced = false;
+			fireForced = false; 
 		} else {
 			return false;
 		}
@@ -128,7 +128,8 @@ bool rvWeaponBlaster::UpdateAttack ( void ) {
 			
 				if( player->GuiActive())	{
 					//make sure the player isn't looking at a gui first
-					SetState ( "Lower", 0 );
+					SetState ( "lower", 0 ); 
+					
 				} else {
 					SetState ( "Fire", 0 );
 				}
@@ -154,7 +155,7 @@ void rvWeaponBlaster::Spawn ( void ) {
 	chargeDelay  = SEC2MS ( spawnArgs.GetFloat ( "chargeDelay" ) );
 
 	fireHeldTime		= 0;
-	fireForced			= false;
+	fireForced			= false; 
 			
 	Flashlight ( owner->IsFlashlightOn() );
 }
@@ -412,18 +413,18 @@ stateResult_t rvWeaponBlaster::State_Fire ( const stateParms_t& parms ) {
 			player = gameLocal.GetLocalPlayer();
 
 			//make sure the player isn't looking at a gui first
-			if( player && player->GuiActive() )	{
+			/*if( player && player->GuiActive() )	{
 				fireHeldTime = 0;
 				SetState ( "Lower", 0 );
 				return SRESULT_DONE;
 			}
-
+			
 			if( player && !player->CanFire() )	{
 				fireHeldTime = 0;
 				SetState ( "Idle", 4 );
 				return SRESULT_DONE;
 			}
-
+			*/
 
 	
 			if ( gameLocal.time - fireHeldTime > chargeTime ) {	

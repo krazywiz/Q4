@@ -691,7 +691,7 @@ stateResult_t idAI::State_Killed ( const stateParms_t& parms ) {
 	if( spawnArgs.GetBool ( "remove_on_death" )  ){
 		//PostState ( "State_Remove" );
 	} else { 
-		//PostState ( "State_Dead" );
+		PostState ( "State_Dead" );
 	}
 	
 	return SRESULT_DONE;
@@ -824,6 +824,7 @@ stateResult_t idAI::State_Burn ( const stateParms_t& parms ) {
 idAI::State_Remove
 ================
 */
+
 stateResult_t idAI::State_Remove ( const stateParms_t& parms ) {
 	PostEventMS( &EV_Remove, 0 );
 	return SRESULT_DONE;

@@ -3,7 +3,7 @@
 #pragma hdrstop
 
 #include "../Game_local.h"
-
+#include "AI_Manager.h"
 class rvMonsterGrunt : public idAI {
 public:
 
@@ -52,6 +52,7 @@ rvMonsterGrunt::rvMonsterGrunt
 ================
 */
 rvMonsterGrunt::rvMonsterGrunt ( void ) {
+	team = AITEAM_MARINE; // added this
 	standingMeleeNoAttackTime = 0;
 }
 

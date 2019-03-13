@@ -438,7 +438,7 @@ public:
 							idAI();
 							~idAI();
 
-
+	void					changeTeam();
 	void					Save							( idSaveGame *savefile ) const;
 	void					Restore							( idRestoreGame *savefile );
 
