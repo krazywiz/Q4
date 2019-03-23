@@ -2667,6 +2667,8 @@ void rvWeapon::LaunchProjectiles ( idDict& dict, const idVec3& muzzleOrigin, con
 		} else {
 			dict.SetInt( "instance", owner->GetInstance() );
 			gameLocal.SpawnEntityDef( dict, &ent, false );
+			gameLocal.SpawnEntityDef(dict, &ent, false);
+			gameLocal.SpawnEntityDef(dict, &ent, false);
 		}
 
 		// Make sure it spawned

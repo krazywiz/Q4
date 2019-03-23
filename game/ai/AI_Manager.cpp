@@ -195,16 +195,19 @@ void rvAIManager::MarkReachBlocked(idAAS* aas, idReachability* reach, const idLi
 rvAIManager::ReactToPlayerAttack
 ================
 */
+
 void rvAIManager::ReactToPlayerAttack ( idPlayer* player, const idVec3 &origin, const idVec3 &dir ){
 	idActor* actor;
 	float expandSize;
-	
+	idGameLocal* game = new idGameLocal(); //added this
+	idPlayer* person = game->GetLocalPlayer(); //added this
 	// Check all enemies and see if they need to react
+	//if (!(actor->IsType(person->GetClassType())))
 	for ( actor = GetEnemyTeam ( (aiTeam_t)player->team ); actor; actor = actor->teamNode.Next() ) {
 		// Skip non ai entities
 		if ( !actor->IsType ( idAI::Type ) ) {
 			continue;
-		}			
+		}		
 
 		idAI *curAI = static_cast<idAI*>(actor);
 
@@ -349,6 +352,7 @@ bool rvAIManager::IsSimpleThink ( idAI* ai ) {
 rvAIManager::GetEnemyTeam
 ================
 */
+
 idActor* rvAIManager::GetEnemyTeam ( aiTeam_t team ) {
 	switch ( team ) {
 		case AITEAM_MARINE:

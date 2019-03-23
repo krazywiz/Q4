@@ -4181,6 +4181,8 @@ idEntity *idAI::FindEnemy ( bool inFov, bool forceNearest, float maxDistSqr ){
 	origin			 = GetEyePosition ( );
 
 	// Iterate through the enemy team
+
+	/*
 	for( actor = aiManager.GetEnemyTeam ( (aiTeam_t)team ); actor; actor = actor->teamNode.Next() ) {
 		// Skip hidden enemies and enemies that cant be targeted
 		if( actor->fl.notarget || actor->fl.isDormant || ( actor->IsHidden ( ) && !actor->IsInVehicle() ) ) {
@@ -4224,7 +4226,7 @@ idEntity *idAI::FindEnemy ( bool inFov, bool forceNearest, float maxDistSqr ){
 			bestEnemy  = actor;
 		}
 	}
-
+	*/
 	// If force nearest is set we will give them an enemy reguardless of distance or sight
 	if( forceNearest ){
 		if( bestEnemy == NULL ){
@@ -4237,6 +4239,8 @@ idEntity *idAI::FindEnemy ( bool inFov, bool forceNearest, float maxDistSqr ){
 	return bestEnemy;
 }
 
+
+
 /*
 ============
 idAI::CheckForEnemy
@@ -4244,6 +4248,7 @@ idAI::CheckForEnemy
 Look for a suitable enemy
 ============
 */
+
 bool idAI::CheckForEnemy ( bool useFov, bool force ) {
 	idEntity *newEnemy;
 

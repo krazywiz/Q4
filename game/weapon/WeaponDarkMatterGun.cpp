@@ -431,6 +431,8 @@ void rvDarkMatterProjectile::Spawn ( void ) {
 	nextDamageTime  = 0;
 	radiusDamageDef = gameLocal.FindEntityDefDict ( spawnArgs.GetString ( "def_radius_damage" ) );
 }
+rvDarkMatterProjectile* dmg = new rvDarkMatterProjectile();
+
 
 /*
 ================

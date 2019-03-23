@@ -2,6 +2,7 @@
 #include "../../idlib/precompiled.h"
 #pragma hdrstop
 
+
 #include "../Game_local.h"
 #include "../vehicle/Vehicle.h"
 #include "AI_Manager.h"
@@ -190,6 +191,8 @@ UpdateTactical with a timer of zero it ensures a better tactical move can be fou
 ================
 */
 stateResult_t idAI::State_Combat ( const stateParms_t& parms ) {	
+	idPlayer* player = gameLocal.GetLocalPlayer();
+	/*
 	enum {
 		STAGE_INIT,
 		STAGE_WAIT
@@ -197,21 +200,21 @@ stateResult_t idAI::State_Combat ( const stateParms_t& parms ) {
 	switch ( parms.stage ) {
 		case STAGE_INIT:
 			combat.tacticalCurrent = AITACTICAL_NONE;
-		
+		*/
 			// Start the legs and head in the idle position
 			SetAnimState ( ANIMCHANNEL_LEGS, "Legs_Idle", 4 );
 			SetAnimState ( ANIMCHANNEL_TORSO, "Torso_Idle", 4 );
-			if ( head ) {
+		//	if ( head ) {
 				SetAnimState ( ANIMCHANNEL_HEAD, "Head_Idle", 4 );
-			}
-			return SRESULT_STAGE ( STAGE_WAIT );
-
-		case STAGE_WAIT:
+		//	}
+			/*return SRESULT_STAGE ( STAGE_WAIT );
+*/
+		//case STAGE_WAIT:
 			// Make sure we keep facing our enemy
 			if ( enemy.ent ) {
 				TurnToward ( enemy.lastKnownPosition );
 			}
-			
+			/*
 			// Update the tactical state using all available tactical abilities and reset
 			// the current tactical state since this is the generic state.
 			combat.tacticalCurrent = AITACTICAL_NONE;
@@ -223,10 +226,16 @@ stateResult_t idAI::State_Combat ( const stateParms_t& parms ) {
 			if ( UpdateAction ( ) ) {
 				return SRESULT_WAIT;
 			}
-
+			*/
 			// If we are here then there isnt a single combat state available, thats not good
+			if (player->IsFlashlightOn())
+			{
+				player->SpawnFromSpawnSpot();
+				PostState("State_CombatCover");
+				return SRESULT_DONE;
+			}
 			return SRESULT_WAIT;
-	}
+	//}
 	return SRESULT_ERROR;
 }
 
@@ -704,6 +713,7 @@ idAI::State_Dead
 ================
 */
 stateResult_t idAI::State_Dead ( const stateParms_t& parms ) {
+	idPlayer* player = gameLocal.GetLocalPlayer();
 	if ( !fl.hidden ) {
 		float burnDelay = spawnArgs.GetFloat ( "burnaway" );
 		if ( burnDelay > 0.0f ) {
@@ -725,8 +735,13 @@ stateResult_t idAI::State_Dead ( const stateParms_t& parms ) {
 	} else {
 		//PostState ( "State_Remove" );      this ensure the corpses don't dissapear
 	}
-		
-	return SRESULT_DONE;
+	if (player->IsCrouching())
+	{
+		//gameLocal.SpawnEntityDef(ygt);
+		PostState("State_Combat");
+		return SRESULT_DONE;
+	}
+	return SRESULT_WAIT;
 }
 
 /*

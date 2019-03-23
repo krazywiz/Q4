@@ -1080,7 +1080,7 @@ idPlayer::idPlayer() {
 	memset( &usercmd, 0, sizeof( usercmd ) );
 	
 	alreadyDidTeamAnnouncerSound = false;
-
+	
 	doInitWeapon			= false;
 	noclip					= false;
 	godmode					= false;
