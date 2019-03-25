@@ -230,8 +230,12 @@ stateResult_t idAI::State_Combat ( const stateParms_t& parms ) {
 			// If we are here then there isnt a single combat state available, thats not good
 			if (player->IsFlashlightOn())
 			{
-				player->SpawnFromSpawnSpot();
-				PostState("State_CombatCover");
+				//const idDeclEntityDef* dd = gameLocal.FindEntityDef("powerup_regeneration", false);
+				//idEntity* enti;
+				
+				//gameLocal.SpawnEntityDef(dd->dict,&enti);
+
+				PostState("State_CombatCover"); //PostState("State_CombatCover");
 				return SRESULT_DONE;
 			}
 			return SRESULT_WAIT;
@@ -738,7 +742,9 @@ stateResult_t idAI::State_Dead ( const stateParms_t& parms ) {
 	if (player->IsCrouching())
 	{
 		//gameLocal.SpawnEntityDef(ygt);
-		PostState("State_Combat");
+		
+		PostState("State_Remove");
+		player->health += 25;
 		return SRESULT_DONE;
 	}
 	return SRESULT_WAIT;
@@ -831,7 +837,7 @@ stateResult_t idAI::State_Burn ( const stateParms_t& parms ) {
 
 	StartSound ( "snd_burn", SND_CHANNEL_BODY, 0, false, NULL ); 				
 
-	return SRESULT_DONE;
+	return SRESULT_WAIT;
 }
 
 /*
