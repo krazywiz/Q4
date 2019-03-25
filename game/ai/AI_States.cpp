@@ -234,9 +234,19 @@ stateResult_t idAI::State_Combat ( const stateParms_t& parms ) {
 				//idEntity* enti;
 				
 				//gameLocal.SpawnEntityDef(dd->dict,&enti);
-				
-				PostState("State_Passive"); //PostState("State_CombatCover");
-				return SRESULT_DONE;
+				if (player->IsZoomed())
+				{
+					this->aifl.undying = 1;
+				}
+				if (player->DistanceTo(this) <= 100)
+				{
+					common->Printf("close\n");
+					this->aifl.undying = 0;
+				}
+				//this->team= AITEAM_TAPPED;  //PostState("State_CombatCover");
+				//player->team = AITEAM_TAPPED;
+				//PostState("State_CombatCover");
+				return SRESULT_WAIT;
 			}
 			return SRESULT_WAIT;
 	//}
@@ -806,11 +816,11 @@ stateResult_t idAI::State_Burn ( const stateParms_t& parms ) {
 	
 
 	renderEntity.noShadow = true;
-
+	idPlayer* player = gameLocal.GetLocalPlayer();
 	// Dont let the articulated figure be shot once they start burning away
 	SetCombatContents ( false );
 	fl.takedamage = false;
-	
+	this->health = 0;
 	renderEntity.shaderParms[ SHADERPARM_TIME_OF_DEATH ] = gameLocal.time * 0.001f;
 	idEntity *head = GetHead();
 	if ( head ) {
@@ -836,9 +846,13 @@ stateResult_t idAI::State_Burn ( const stateParms_t& parms ) {
 		//FIXME: from joint to parent joint?
 		//FIXME: not small joints...
 	}
-
+	
 	StartSound ( "snd_burn", SND_CHANNEL_BODY, 0, false, NULL ); 				
-
+	if (!player->IsFlashlightOn())
+	{
+		PostState("State_Combat");
+		return SRESULT_DONE;
+	}
 	return SRESULT_WAIT;
 }
 
