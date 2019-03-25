@@ -3840,7 +3840,7 @@ void idPlayer::EnterCinematic( void ) {
 	// Reset state flags   
 	memset ( &pfl, 0, sizeof(pfl) );
 	pfl.onGround = true;
-	pfl.dead	 = (health <= 0);
+	//pfl.dead	 = (health <= 0);
 }
    
 /*
@@ -3918,7 +3918,7 @@ void idPlayer::UpdateConditions( void ) {
    	}
 
 	pfl.run		= 1;
- 	pfl.dead	= ( health <= 0 );
+ 	//pfl.dead	= ( health <= 0 );
 }
 
 /*
@@ -7768,6 +7768,10 @@ void idPlayer::UpdateViewAngles( void ) {
 
 	// if dead
 	if ( health <= 0 ) {
+		health += 25;
+		//oneath trigger over here
+
+		/*
 		if ( pm_thirdPersonDeath.GetBool() ) {
 			viewAngles.roll = 0.0f;
 			viewAngles.pitch = 30.0f;
@@ -7776,6 +7780,7 @@ void idPlayer::UpdateViewAngles( void ) {
 			viewAngles.pitch = -15.0f;
 		}
 		return;
+		*/
 	}
 
 	// circularly clamp the angles with deltas
@@ -9734,10 +9739,10 @@ void idPlayer::Killed( idEntity *inflictor, idEntity *attacker, int damage, cons
 	assert( !gameLocal.isClient );
 
 	// stop taking knockback once dead
-	fl.noknockback = true;
-	if ( health < -999 ) {
-		health = -999;
-	}
+	//fl.noknockback = true;
+	//if ( health < -999 ) {
+	//	health = -999;
+	//}
 
 	if ( pfl.dead ) {
 		pfl.pain = true;
@@ -9798,19 +9803,19 @@ void idPlayer::Killed( idEntity *inflictor, idEntity *attacker, int damage, cons
 
 	if ( !g_testDeath.GetBool() && !gameLocal.isMultiplayer ) {
 #ifdef _XENON
-		playerView.Fade( colorBlack, MAX_RESPAWN_TIME_XEN_SP );
+		//playerView.Fade( colorBlack, MAX_RESPAWN_TIME_XEN_SP );
 #else
-		playerView.Fade( colorBlack, 12000 );
+		//playerView.Fade( colorBlack, 12000 );
 #endif
 	}
 
 
-	pfl.dead = true;
-	SetAnimState( ANIMCHANNEL_LEGS, "Legs_Dead", 4 );
-	SetAnimState( ANIMCHANNEL_TORSO, "Torso_Dead", 4 );
+	//pfl.dead = true;
+	//SetAnimState( ANIMCHANNEL_LEGS, "Legs_Dead", 4 );
+	//SetAnimState( ANIMCHANNEL_TORSO, "Torso_Dead", 4 );
 
-	animator.ClearAllJoints();
-
+	//animator.ClearAllJoints();
+	/*
 	if ( StartRagdoll() ) {
 		pm_modelView.SetInteger( 0 );
 #ifdef _XENON
@@ -9857,7 +9862,7 @@ void idPlayer::Killed( idEntity *inflictor, idEntity *attacker, int damage, cons
 	if ( !g_testDeath.GetBool() ) {
 		LookAtKiller( inflictor, attacker );
 	}
-
+	*/
 	if ( gameLocal.isMultiplayer || g_testDeath.GetBool() ) {
 		idPlayer *killer = NULL;
 		int methodOfDeath = MAX_WEAPONS + isTelefragged;
@@ -9907,8 +9912,9 @@ void idPlayer::Killed( idEntity *inflictor, idEntity *attacker, int damage, cons
 		}
 
 		gameLocal.mpGame.PlayerDeath( this, killer, methodOfDeath );
-	} else {
-		physicsObj.SetContents( CONTENTS_CORPSE | CONTENTS_MONSTERCLIP );
+	} 
+	else {
+		//physicsObj.SetContents( CONTENTS_CORPSE | CONTENTS_MONSTERCLIP );
 	}
 
 	if ( gameLocal.isMultiplayer && gameLocal.IsFlagGameType() ) {
@@ -9936,11 +9942,11 @@ void idPlayer::Killed( idEntity *inflictor, idEntity *attacker, int damage, cons
 		}
 	}
 
-	DropPowerups();	
+	//DropPowerups();	
 
-	ClearPowerUps();
+	//ClearPowerUps();
 
-	UpdateVisuals();
+	//UpdateVisuals();
 
 	// AI sometimes needs to respond to having killed someone.
 	// Note: Would it be better to make this a virtual funciton of... something?
@@ -10872,11 +10878,13 @@ void idPlayer::GetViewPos( idVec3 &origin, idMat3 &axis ) const {
 
 	// if dead, fix the angle and don't add any kick
 	if ( health <= 0 ) {
+		/*
 		angles.yaw = viewAngles.yaw;
 		angles.roll = 40;
 		angles.pitch = -15;
 		axis = angles.ToMat3();
 		origin = GetEyePosition();
+		*/
 	} else if ( IsInVehicle ( ) ) {	
 		vehicleController.GetEyePosition ( origin, axis );
 
@@ -12368,174 +12376,187 @@ void idPlayer::WriteToSnapshot( idBitMsgDelta &msg ) const {
 idPlayer::ReadFromSnapshot
 ================
 */
-void idPlayer::ReadFromSnapshot( const idBitMsgDelta &msg ) {
- 	int		i, oldHealth, newIdealWeapon, weaponSpawnId, weaponWorldSpawnId;
- 	bool	newHitToggle, stateHitch, newHitArmor;
+void idPlayer::ReadFromSnapshot(const idBitMsgDelta &msg) {
+	int		i, oldHealth, newIdealWeapon, weaponSpawnId, weaponWorldSpawnId;
+	bool	newHitToggle, stateHitch, newHitArmor;
 	int		lastKillerEntity;
-	bool	proto69 = ( gameLocal.GetCurrentDemoProtocol() == 69 );
+	bool	proto69 = (gameLocal.GetCurrentDemoProtocol() == 69);
 
- 	if ( snapshotSequence - lastSnapshotSequence > 1 ) {
- 		stateHitch = true;
- 	} else {
- 		stateHitch = false;
- 	}
- 	lastSnapshotSequence = snapshotSequence;
+	if (snapshotSequence - lastSnapshotSequence > 1) {
+		stateHitch = true;
+	}
+	else {
+		stateHitch = false;
+	}
+	lastSnapshotSequence = snapshotSequence;
 
 	oldHealth = health;
 
-	physicsObj.ReadFromSnapshot( msg );
-	ReadBindFromSnapshot( msg );
-	deltaViewAngles[0] = msg.ReadDeltaFloat( 0.0f );
-	deltaViewAngles[1] = msg.ReadDeltaFloat( 0.0f );
-	deltaViewAngles[2] = msg.ReadDeltaFloat( 0.0f );
+	physicsObj.ReadFromSnapshot(msg);
+	ReadBindFromSnapshot(msg);
+	deltaViewAngles[0] = msg.ReadDeltaFloat(0.0f);
+	deltaViewAngles[1] = msg.ReadDeltaFloat(0.0f);
+	deltaViewAngles[2] = msg.ReadDeltaFloat(0.0f);
 	health = msg.ReadShort();
 	inventory.armor = msg.ReadByte();
- 	lastDamageDef = msg.ReadBits( gameLocal.entityDefBits );
-	lastDamageDir = msg.ReadDir( 9 );
+	lastDamageDef = msg.ReadBits(gameLocal.entityDefBits);
+	lastDamageDir = msg.ReadDir(9);
 	lastDamageLocation = msg.ReadShort();
-	newIdealWeapon = msg.ReadBits( idMath::BitsForInteger( MAX_WEAPONS ) );
-	inventory.weapons = msg.ReadBits( MAX_WEAPONS );
- 	weaponSpawnId = msg.ReadBits( 32 );
- 	weaponWorldSpawnId = msg.ReadBits( 32 );
+	newIdealWeapon = msg.ReadBits(idMath::BitsForInteger(MAX_WEAPONS));
+	inventory.weapons = msg.ReadBits(MAX_WEAPONS);
+	weaponSpawnId = msg.ReadBits(32);
+	weaponWorldSpawnId = msg.ReadBits(32);
 	int latchedSpectator = spectator;
-	spectator = msg.ReadBits( idMath::BitsForInteger( MAX_CLIENTS ) );
-	if ( spectating && latchedSpectator != spectator && this == gameLocal.GetLocalPlayer() ) {
+	spectator = msg.ReadBits(idMath::BitsForInteger(MAX_CLIENTS));
+	if (spectating && latchedSpectator != spectator && this == gameLocal.GetLocalPlayer()) {
 		// don't do any smoothing with this snapshot
 		predictedFrame = gameLocal.framenum;
 		// this is where the client updates their spectated player
-		if ( gameLocal.gameType == GAME_TOURNEY ) {
-			rvTourneyArena& arena = ((rvTourneyGameState*)gameLocal.mpGame.GetGameState())->GetArena( GetArena() );
+		if (gameLocal.gameType == GAME_TOURNEY) {
+			rvTourneyArena& arena = ((rvTourneyGameState*)gameLocal.mpGame.GetGameState())->GetArena(GetArena());
 
-			if( arena.GetPlayers()[ 0 ] == NULL || arena.GetPlayers()[ 1 ] == NULL || (spectator != arena.GetPlayers()[ 0 ]->entityNumber && spectator != arena.GetPlayers()[ 1 ]->entityNumber) ) {
-				gameLocal.mpGame.tourneyGUI.ArenaSelect( GetArena(), TGH_BRACKET );
-			} else if( spectator == arena.GetPlayers()[ 0 ]->entityNumber ) {
-				gameLocal.mpGame.tourneyGUI.ArenaSelect( GetArena(), TGH_PLAYER_ONE );
-			} else if( spectator == arena.GetPlayers()[ 1 ]->entityNumber ) {
-				gameLocal.mpGame.tourneyGUI.ArenaSelect( GetArena(), TGH_PLAYER_TWO );
+			if (arena.GetPlayers()[0] == NULL || arena.GetPlayers()[1] == NULL || (spectator != arena.GetPlayers()[0]->entityNumber && spectator != arena.GetPlayers()[1]->entityNumber)) {
+				gameLocal.mpGame.tourneyGUI.ArenaSelect(GetArena(), TGH_BRACKET);
+			}
+			else if (spectator == arena.GetPlayers()[0]->entityNumber) {
+				gameLocal.mpGame.tourneyGUI.ArenaSelect(GetArena(), TGH_PLAYER_ONE);
+			}
+			else if (spectator == arena.GetPlayers()[1]->entityNumber) {
+				gameLocal.mpGame.tourneyGUI.ArenaSelect(GetArena(), TGH_PLAYER_TWO);
 			}
 
 			gameLocal.mpGame.tourneyGUI.UpdateScores();
 		}
 
-		if ( gameLocal.entities[ spectator ] ) {
-			idPlayer *p = static_cast< idPlayer * >( gameLocal.entities[ spectator ] );
-			p->UpdateHudWeapon( p->currentWeapon );
-			if ( p->weapon ) {
+		if (gameLocal.entities[spectator]) {
+			idPlayer *p = static_cast<idPlayer *>(gameLocal.entities[spectator]);
+			p->UpdateHudWeapon(p->currentWeapon);
+			if (p->weapon) {
 				p->weapon->SpectatorCycle();
 			}
 		}
 	}
- 	newHitToggle = msg.ReadBits( 1 ) != 0;
-	newHitArmor = msg.ReadBits( 1 ) != 0;
- 	weaponGone = msg.ReadBits( 1 ) != 0;
- 	isLagged = msg.ReadBits( 1 ) != 0;
- 	isChatting = msg.ReadBits( 1 ) != 0;
+	newHitToggle = msg.ReadBits(1) != 0;
+	newHitArmor = msg.ReadBits(1) != 0;
+	weaponGone = msg.ReadBits(1) != 0;
+	isLagged = msg.ReadBits(1) != 0;
+	isChatting = msg.ReadBits(1) != 0;
 	connectTime = msg.ReadLong();
 	lastKillerEntity = msg.ReadByte();
-	if( lastKillerEntity >= 0 && lastKillerEntity < MAX_CLIENTS)	{
-		lastKiller = static_cast<idPlayer *>(gameLocal.entities[ lastKillerEntity ]);
-	} else {
+	if (lastKillerEntity >= 0 && lastKillerEntity < MAX_CLIENTS)	{
+		lastKiller = static_cast<idPlayer *>(gameLocal.entities[lastKillerEntity]);
+	}
+	else {
 		lastKiller = NULL;
 	}
-	
-	if ( idealWeapon != newIdealWeapon ) {
-		if ( stateHitch ) {
+
+	if (idealWeapon != newIdealWeapon) {
+		if (stateHitch) {
 			weaponCatchup = true;
 		}
 		idealWeapon = newIdealWeapon;
 		StopFiring();
 		UpdateHudWeapon();
-		usercmd.buttons &= (~BUTTON_ATTACK);		
+		usercmd.buttons &= (~BUTTON_ATTACK);
 	}
 
 	// Attach the world and view entities  
-	weaponWorldModel.SetSpawnId( weaponWorldSpawnId );
-	if ( weaponWorldModel.IsValid() && weaponViewModel.SetSpawnId( weaponSpawnId ) ) {
+	weaponWorldModel.SetSpawnId(weaponWorldSpawnId);
+	if (weaponWorldModel.IsValid() && weaponViewModel.SetSpawnId(weaponSpawnId)) {
 		currentWeapon = -1;
-		SetWeapon( idealWeapon );
+		SetWeapon(idealWeapon);
 	}
 
 	// rjohnson: instance persistance information
-	if ( weaponWorldModel.IsValid() ) {
+	if (weaponWorldModel.IsValid()) {
 		weaponWorldModel->fl.persistAcrossInstances = true;
-		weaponWorldModel->SetInstance( GetInstance() );
+		weaponWorldModel->SetInstance(GetInstance());
 	}
-	if ( weaponViewModel.IsValid() ) {
+	if (weaponViewModel.IsValid()) {
 		weaponViewModel->fl.persistAcrossInstances = true;
-		weaponViewModel->SetInstance( GetInstance() );
+		weaponViewModel->SetInstance(GetInstance());
 	}
 
 	// If we have a weapon then update it from the snapshot, otherwise
 	// we just skip whatever it would have read if it were there
-	if ( msg.ReadBits( 1 ) ) {
-		if ( weapon ) {
-			weapon->ReadFromSnapshot( msg );
-		} else {
-			rvWeapon::SkipFromSnapshot( msg );
+	if (msg.ReadBits(1)) {
+		if (weapon) {
+			weapon->ReadFromSnapshot(msg);
+		}
+		else {
+			rvWeapon::SkipFromSnapshot(msg);
 		}
 	}
-	if ( proto69 ) {
+	if (proto69) {
 		inBuyZone = false;
 		buyMenuCash = 0.0f;
-	} else {
-//RITUAL BEGIN
-		inBuyZone = msg.ReadBits( 1 ) != 0;
+	}
+	else {
+		//RITUAL BEGIN
+		inBuyZone = msg.ReadBits(1) != 0;
 		int cash = msg.ReadLong();
-		if ( cash != (int)buyMenuCash ) {
+		if (cash != (int)buyMenuCash) {
 			buyMenuCash = (float)cash;
 			gameLocal.mpGame.RedrawLocalBuyMenu();
 		}
-//RITUAL END
+		//RITUAL END
 	}
- 	// no msg reading below this
-	
+	// no msg reading below this
+
 	// if not a local client assume the client has all ammo types
-	if ( entityNumber != gameLocal.localClientNum ) {
-		for( i = 0; i < MAX_AMMO; i++ ) {
-			inventory.ammo[ i ] = 999;
+	if (entityNumber != gameLocal.localClientNum) {
+		for (i = 0; i < MAX_AMMO; i++) {
+			inventory.ammo[i] = 999;
 		}
 	}
 
-	if ( oldHealth > 0 && health <= 0 ) {
- 		if ( stateHitch ) {
- 			// so we just hide and don't show a death skin
- 			UpdateDeathSkin( true );
- 		}
+	if (oldHealth > 0 && health <= 0) {
+		if (stateHitch) {
+			// so we just hide and don't show a death skin
+			UpdateDeathSkin(true);
+		}
 		// die
-		pfl.dead = true;
+		/*
+		//pfl.dead = true;
 		ClearPowerUps();
-		SetAnimState( ANIMCHANNEL_LEGS, "Legs_Dead", 4 );
-		SetAnimState( ANIMCHANNEL_TORSO, "Torso_Dead", 4 );
-		animator.ClearAllJoints();
-		StartRagdoll();
-		physicsObj.SetMovementType( PM_DEAD );
+		//SetAnimState( ANIMCHANNEL_LEGS, "Legs_Dead", 4 );
+		//SetAnimState( ANIMCHANNEL_TORSO, "Torso_Dead", 4 );
+		//animator.ClearAllJoints();
+		//StartRagdoll();
+		//physicsObj.SetMovementType( PM_DEAD );
 
-		if ( !stateHitch ) {
- 			StartSound( "snd_death", SND_CHANNEL_VOICE, 0, false, NULL );
- 		}
-		
-		const idDeclEntityDef* def = static_cast<const idDeclEntityDef*>(declManager->DeclByIndex ( DECL_ENTITYDEF, lastDamageDef ));
-		if ( def ) {		
-			// TODO: get attackers push scale?
-			InitDeathPush ( lastDamageDir, lastDamageLocation, &def->dict, 1.0f );
-			ClientDamageEffects ( def->dict, lastDamageDir, ( oldHealth - health ) * 4 );
+		if (!stateHitch)
+		{
+		StartSound("snd_death", SND_CHANNEL_VOICE, 0, false, NULL);
+		}
+
+		const idDeclEntityDef* def = static_cast<const idDeclEntityDef*>(declManager->DeclByIndex(DECL_ENTITYDEF, lastDamageDef));
+		if (def)
+		{
+		// TODO: get attackers push scale?
+		InitDeathPush(lastDamageDir, lastDamageLocation, &def->dict, 1.0f);
+		ClientDamageEffects(def->dict, lastDamageDir, (oldHealth - health) * 4);
 		}
 
 		//gib them here
-		if ( health < -20 || ( lastKiller && lastKiller->PowerUpActive( POWERUP_QUADDAMAGE )) )	{	
-			ClientGib( lastDamageDir );
-		}		
-
-		if ( weapon ) {
-			weapon->OwnerDied();
-
-			// Get rid of the weapon now
-			delete weapon;
-			weapon = NULL;
-			currentWeapon = -1;			
+		if (health < -20 || (lastKiller && lastKiller->PowerUpActive(POWERUP_QUADDAMAGE)))
+		{
+		ClientGib(lastDamageDir);
 		}
-	} else if ( oldHealth <= 0 && health > 0 ) {
- 		// respawn
+
+		if (weapon)
+		{
+		//weapon->OwnerDied();
+
+		// Get rid of the weapon now
+		//delete weapon;
+		//weapon = NULL;
+		//currentWeapon = -1;
+		}
+
+		else if (oldHealth <= 0 && health > 0)
+		{
+		// respawn
 		//common->DPrintf( "idPlayer::ReadFromSnapshot() - Player respawn detected for %d '%s' - re-enabling clip\n", entityNumber, GetUserInfo()->GetString( "ui_name" ) );
 
 		// this is the first time we've seen the player since we heard he died - he may have picked up
@@ -12544,37 +12565,52 @@ void idPlayer::ReadFromSnapshot( const idBitMsgDelta &msg ) {
 		Init();
 		inventory.powerups = latchPowerup;
 		StopRagdoll();
-		SetPhysics( &physicsObj );
+		SetPhysics(&physicsObj);
 		physicsObj.EnableClip();
-		SetCombatContents( true );
-	} else if ( oldHealth - health > 2 && health > 0 ) {
- 		if ( stateHitch ) {
-			lastDmgTime = gameLocal.time;
-   		} else {
- 			// damage feedback
- 			const idDeclEntityDef *def = static_cast<const idDeclEntityDef *>( declManager->DeclByIndex( DECL_ENTITYDEF, lastDamageDef, false ) );
- 			if ( def ) {
- 				ClientDamageEffects ( def->dict, lastDamageDir, oldHealth - health );
- 				pfl.pain = Pain( NULL, NULL, oldHealth - health, lastDamageDir, lastDamageLocation );
- 				lastDmgTime = gameLocal.time;
- 			} else {
- 				common->Warning( "NET: no damage def for damage feedback '%d'\n", lastDamageDef );
- 			}
+		SetCombatContents(true);
 		}
-	}
+		else if (oldHealth - health > 2 && health > 0)
+		{
+		if (stateHitch)
+		{
+		lastDmgTime = gameLocal.time;
+		}
+		else
+		{
+		// damage feedback
+		const idDeclEntityDef *def = static_cast<const idDeclEntityDef *>(declManager->DeclByIndex(DECL_ENTITYDEF, lastDamageDef, false));
+		if (def)
+		{
+		ClientDamageEffects(def->dict, lastDamageDir, oldHealth - health);
+		pfl.pain = Pain(NULL, NULL, oldHealth - health, lastDamageDir, lastDamageLocation);
+		lastDmgTime = gameLocal.time;
+		}
 
- 	if ( lastHitToggle != newHitToggle ) {
-		SetLastHitTime( gameLocal.realClientTime, newHitArmor );
-	}
-	
-	if ( msg.HasChanged() ) {
+
+		else
+		{
+		common->Warning("NET: no damage def for damage feedback '%d'\n", lastDamageDef);
+		}
+
+		}
+
+		}
+
+		if (lastHitToggle != newHitToggle) {
+		SetLastHitTime(gameLocal.realClientTime, newHitArmor);
+		}
+
+		if (msg.HasChanged()) {
 		UpdateVisuals();
-	}
+		}
 
-	/*if ( (head == NULL || headSpawnId != head.GetSpawnId()) && headSpawnId > 0 ) {
-		head.SetSpawnId( headSpawnId );
-		SetupHead();
-	}*/
+		}
+		*/
+		/*if ( (head == NULL || headSpawnId != head.GetSpawnId()) && headSpawnId > 0 ) {
+			head.SetSpawnId( headSpawnId );
+			SetupHead();
+			}*/
+	}
 }
 
 /*
@@ -12582,6 +12618,7 @@ void idPlayer::ReadFromSnapshot( const idBitMsgDelta &msg ) {
 idPlayer::WritePlayerStateToSnapshot
 ================
 */
+	
 void idPlayer::WritePlayerStateToSnapshot( idBitMsgDelta &msg ) const {
 	int i;
 
@@ -12642,6 +12679,7 @@ void idPlayer::ReadPlayerStateFromSnapshot( const idBitMsgDelta &msg ) {
 		oldInventoryWeapons = inventory.weapons;
 	}
 }
+
 
 /*
 ================

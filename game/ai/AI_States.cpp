@@ -234,8 +234,8 @@ stateResult_t idAI::State_Combat ( const stateParms_t& parms ) {
 				//idEntity* enti;
 				
 				//gameLocal.SpawnEntityDef(dd->dict,&enti);
-
-				PostState("State_CombatCover"); //PostState("State_CombatCover");
+				
+				PostState("State_Passive"); //PostState("State_CombatCover");
 				return SRESULT_DONE;
 			}
 			return SRESULT_WAIT;
@@ -764,6 +764,8 @@ stateResult_t idAI::State_LightningDeath ( const stateParms_t& parms ) {
 		rvClientCrawlEffect* effect;
 		effect = new rvClientCrawlEffect ( gameLocal.GetEffect ( spawnArgs, "fx_burn_lightning" ), this, 100 );
 		effect->Play ( gameLocal.time, false );
+		common->Printf("Lightning");
+
 		lightningNextTime = gameLocal.time + 100;
 		lightningEffects++;
 	}

@@ -471,9 +471,9 @@ idActor* rvAIManager::NearestTeammateToPoint ( idActor* from, idVec3 point, bool
 			continue;
 		}
 		//Player?
-		if ( nonPlayer && actor->IsType( idPlayer::GetClassType() ) ) {
+		/*if ( nonPlayer && actor->IsType( idPlayer::GetClassType() ) ) {
 			continue;
-		}
+		}*/
 		//Dead?
 		if ( actor->health <= 0 ) {
 			continue;
