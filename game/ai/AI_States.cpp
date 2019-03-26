@@ -228,30 +228,57 @@ stateResult_t idAI::State_Combat ( const stateParms_t& parms ) {
 			}
 			*/
 			// If we are here then there isnt a single combat state available, thats not good
+			
+			
+			
+			//const idDeclEntityDef* dd = gameLocal.FindEntityDef("powerup_regeneration", false);
+			//idEntity* enti;
+
+			//gameLocal.SpawnEntityDef(dd->dict,&enti);
+			
+			
+			
+
+			
+			//player->team = AITEAM_TAPPED;
+			//	PostState("State_CombatCover");
+			if (player->IsZoomed())
+			{
+				player->team = !player->team;
+			}
+
+
+
+			if (player->DistanceTo(this) <= 150)
+			{
+				this->team = AITEAM_TAPPED;
+				this->health += 10;
+				player->team = AITEAM_TAPPED;
+				PostState("State_CombatCover");
+				return SRESULT_DONE;
+			}
+
+
 			if (player->IsFlashlightOn())
 			{
-				//const idDeclEntityDef* dd = gameLocal.FindEntityDef("powerup_regeneration", false);
-				//idEntity* enti;
-				
-				//gameLocal.SpawnEntityDef(dd->dict,&enti);
-				if (player->IsZoomed())
-				{
-					this->aifl.undying = 1;
-				}
-				if (player->DistanceTo(this) <= 100)
-				{
-					common->Printf("close\n");
-					this->aifl.undying = 0;
-				}
-				//this->team= AITEAM_TAPPED;  //PostState("State_CombatCover");
-				//player->team = AITEAM_TAPPED;
-				//PostState("State_CombatCover");
-				return SRESULT_WAIT;
+				//if (this->team == AITEAM_TAPPED)
+				//{
+				PostState("State_Burn");
+				return SRESULT_DONE;
+				//}
 			}
+
+				
 			return SRESULT_WAIT;
+
+
 	//}
 	return SRESULT_ERROR;
 }
+
+
+
+	/*
 
 /*
 ================
@@ -262,6 +289,7 @@ enemy until the cover point is invalidated.
 ================
 */
 stateResult_t idAI::State_CombatCover ( const stateParms_t& parms ) {	
+	idPlayer* player = gameLocal.GetLocalPlayer();
 	enum {
 		STAGE_MOVE,
 		STAGE_ATTACK,
@@ -310,7 +338,38 @@ stateResult_t idAI::State_CombatCover ( const stateParms_t& parms ) {
 			if ( UpdateAction ( ) ) {
 				return SRESULT_WAIT;
 			}
-			
+
+
+
+
+			if (player->IsZoomed())
+			{
+				player->team = !player->team;
+			}
+
+			if (player->IsCrouching())
+			{
+				PostState("State_Combat");
+				return SRESULT_DONE;
+			}
+
+			if (player->health <= 0)
+			{
+				
+				PostState("State_Killed");
+				return SRESULT_DONE;
+			}
+
+
+			if (player->IsFlashlightOn())
+			{
+				//if (this->team == AITEAM_TAPPED)
+				//{
+					PostState("State_Burn");
+					return SRESULT_DONE;
+				//}
+			}
+
 			return SRESULT_WAIT;
 	}
 	return SRESULT_ERROR;
@@ -752,10 +811,13 @@ stateResult_t idAI::State_Dead ( const stateParms_t& parms ) {
 	if (player->IsCrouching())
 	{
 		//gameLocal.SpawnEntityDef(ygt);
-		
-		PostState("State_Remove");
-		player->health += 25;
-		return SRESULT_DONE;
+		if (this->team == AITEAM_TAPPED)
+		{
+
+			PostState("State_Remove");
+			player->health += 25;
+			return SRESULT_DONE;
+		}
 	}
 	return SRESULT_WAIT;
 }
@@ -847,13 +909,25 @@ stateResult_t idAI::State_Burn ( const stateParms_t& parms ) {
 		//FIXME: not small joints...
 	}
 	
-	StartSound ( "snd_burn", SND_CHANNEL_BODY, 0, false, NULL ); 				
+	StartSound ( "snd_burn", SND_CHANNEL_BODY, 0, false, NULL ); 	
+
 	if (!player->IsFlashlightOn())
 	{
-		PostState("State_Combat");
-		return SRESULT_DONE;
+		if (this->team == AITEAM_TAPPED)
+		{
+			PostState("State_CombatCover");
+			return SRESULT_DONE;
+		}
 	}
-	return SRESULT_WAIT;
+
+	if (player->IsZoomed())
+	{
+		if (this->team == AITEAM_TAPPED)
+		{
+			PostState("State_Remove");
+			return SRESULT_DONE;
+		}
+	}
 }
 
 /*
@@ -1739,6 +1813,7 @@ bool idAI::UpdateTactical_r ( void ) {
 		"State_CombatTurret",		// AITACTICAL_TURRET
 		"State_CombatHide",			// AITACTICAL_HIDE
 		"State_Passive",			// AITACTICAL_PASSIVE
+		
 	};
 
 	if ( g_perfTest_aiStationary.GetBool() ) {

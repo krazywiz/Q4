@@ -1199,6 +1199,7 @@ protected:
 
 	stateResult_t			State_Passive						( const stateParms_t& parms );
 
+	
 	stateResult_t			State_Combat						( const stateParms_t& parms );
 	stateResult_t			State_CombatCover					( const stateParms_t& parms );
 	stateResult_t			State_CombatMelee					( const stateParms_t& parms );

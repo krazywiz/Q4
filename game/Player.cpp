@@ -3966,7 +3966,7 @@ void idPlayer::FireWeapon( void ) {
 	idVec3 muzzle;
 
 //RITUAL BEGIN
-	if( gameLocal.GetIsFrozen() && gameLocal.gameType == GAME_DEADZONE )
+	if (gameLocal.GetIsFrozen() && gameLocal.gameType == GAME_DEADZONE)
 	{
 		return;
 	}
