@@ -242,6 +242,13 @@ stateResult_t idAI::State_Combat ( const stateParms_t& parms ) {
 			
 			//player->team = AITEAM_TAPPED;
 			//	PostState("State_CombatCover");
+			if (player->IsCrouching() && player->IsFlashlightOn())
+			{
+				PostState("State_CombatCover");
+				return SRESULT_DONE;
+			}
+			
+			
 			if (player->IsZoomed())
 			{
 				player->team = !player->team;
@@ -254,8 +261,6 @@ stateResult_t idAI::State_Combat ( const stateParms_t& parms ) {
 				this->team = AITEAM_TAPPED;
 				this->health += 10;
 				player->team = AITEAM_TAPPED;
-				PostState("State_CombatCover");
-				return SRESULT_DONE;
 			}
 
 
@@ -268,6 +273,14 @@ stateResult_t idAI::State_Combat ( const stateParms_t& parms ) {
 				//}
 			}
 
+
+
+			if (player->health <= 0)
+			{
+
+				PostState("State_Killed");
+				return SRESULT_DONE;
+			}
 				
 			return SRESULT_WAIT;
 
@@ -340,7 +353,17 @@ stateResult_t idAI::State_CombatCover ( const stateParms_t& parms ) {
 			}
 
 
+			
 
+
+			if (player->DistanceTo(this) <= 150)
+			{
+				this->team = AITEAM_TAPPED;
+				this->health += 10;
+				player->team = AITEAM_TAPPED;
+				PostState("State_CombatCover");
+				return SRESULT_DONE;
+			}
 
 			if (player->IsZoomed())
 			{
@@ -808,16 +831,15 @@ stateResult_t idAI::State_Dead ( const stateParms_t& parms ) {
 	} else {
 		//PostState ( "State_Remove" );      this ensure the corpses don't dissapear
 	}
+
+
 	if (player->IsCrouching())
 	{
-		//gameLocal.SpawnEntityDef(ygt);
-		if (this->team == AITEAM_TAPPED)
-		{
+		//gameLocal.SpawnEntityDef(ygt)
 
 			PostState("State_Remove");
 			player->health += 25;
-			return SRESULT_DONE;
-		}
+			return SRESULT_DONE;	
 	}
 	return SRESULT_WAIT;
 }
@@ -911,23 +933,21 @@ stateResult_t idAI::State_Burn ( const stateParms_t& parms ) {
 	
 	StartSound ( "snd_burn", SND_CHANNEL_BODY, 0, false, NULL ); 	
 
-	if (!player->IsFlashlightOn())
+	if (!(player->IsFlashlightOn()))
 	{
-		if (this->team == AITEAM_TAPPED)
-		{
-			PostState("State_CombatCover");
+		
+			PostState("State_Combat");
 			return SRESULT_DONE;
-		}
 	}
 
 	if (player->IsZoomed())
 	{
-		if (this->team == AITEAM_TAPPED)
-		{
 			PostState("State_Remove");
 			return SRESULT_DONE;
-		}
+		
 	}
+
+	return SRESULT_WAIT;
 }
 
 /*
