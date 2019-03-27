@@ -352,6 +352,7 @@ stateResult_t rvWeaponBlaster::State_Charge ( const stateParms_t& parms ) {
 				
 				if ( !wsfl.attack ) {
 					SetState ( "Fire", 0 );
+					
 					return SRESULT_DONE;
 				}
 				
@@ -426,9 +427,17 @@ stateResult_t rvWeaponBlaster::State_Fire ( const stateParms_t& parms ) {
 			}
 			*/
 
-	
+			
 			if ( gameLocal.time - fireHeldTime > chargeTime ) {	
 				Attack ( true, 1, spread, 0, 1.0f );
+				
+				
+				idPlayer* player = gameLocal.GetLocalPlayer();
+					// Fixme!  Better guys should drop better stuffs!  Make drops related to guy type?  Do something cooler here?
+				
+						
+					
+				
 				PlayEffect ( "fx_chargedflash", barrelJointView, false );
 				PlayAnim( ANIMCHANNEL_ALL, "chargedfire", parms.blendFrames );
 			} else {

@@ -157,6 +157,8 @@ rvWeaponShotgun::State_Fire
 ================
 */
 stateResult_t rvWeaponShotgun::State_Fire( const stateParms_t& parms ) {
+	idPlayer* player = gameLocal.GetLocalPlayer();
+	int y = player->GetCurrentWeapon();
 	enum {
 		STAGE_INIT,
 		STAGE_WAIT,
@@ -165,6 +167,8 @@ stateResult_t rvWeaponShotgun::State_Fire( const stateParms_t& parms ) {
 		case STAGE_INIT:
 			nextAttackTime = gameLocal.time + (fireRate * owner->PowerUpModifier ( PMOD_FIRERATE ));
 			Attack( false, hitscans, spread, 0, 1.0f );
+			
+			common->Printf("%d\n", y);
 			PlayAnim( ANIMCHANNEL_ALL, "fire", 0 );	
 			return SRESULT_STAGE( STAGE_WAIT );
 	

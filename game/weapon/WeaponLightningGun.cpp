@@ -338,6 +338,7 @@ rvWeaponLightningGun::Attack
 */
 void rvWeaponLightningGun::Attack ( idEntity* ent, const idVec3& dir, float power ) {
 	// Double check
+	ent->health += 10;
 	if ( !ent || !ent->fl.takedamage ) {
 		return;
 	}

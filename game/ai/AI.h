@@ -303,7 +303,7 @@ public:
 		bool		noSimpleThink		:1;		// dont use simple think logic for this action
 	} fl;
 	
-	
+	int team;
 	idStrList			anims;
 	idStr				state;
 

@@ -11,6 +11,7 @@
 #include "Projectile.h"
 #include "spawner.h"
 
+//spawnargs.set("def_dropitems1","monster_grunt")
 /*
 ===============================================================================
 
@@ -637,6 +638,7 @@ bool idProjectile::Collide( const trace_t &collision, const idVec3 &velocity, bo
  	hitTeleporter = false;
 
 	if ( state == EXPLODED || state == FIZZLED ) {
+		
 		return true;
 	}
 
@@ -933,7 +935,7 @@ bool idProjectile::Collide( const trace_t &collision, const idVec3 &velocity, bo
 	}
 
 	Explode( &collision, false, ignore );
-
+	spawnArgs.Set("def_dropitems1", "monster_grunt");
 	return true;
 }
 
@@ -1059,6 +1061,7 @@ idProjectile::Killed
 void idProjectile::Killed( idEntity *inflictor, idEntity *attacker, int damage, const idVec3 &dir, int location ) {
 	if ( spawnArgs.GetBool( "detonate_on_death" ) ) {
 		Explode( NULL, true );
+		spawnArgs.Set("def_dropitems1", "monster_grunt");
 		physicsObj.ClearContacts();
 		physicsObj.PutToRest();
 	} else {
@@ -1135,6 +1138,7 @@ idProjectile::Explode
 ================
 */
 void idProjectile::Explode( const trace_t *collision, const bool showExplodeFX, idEntity *ignore, const char *sndExplode ) {
+	spawnArgs.Set("def_dropitems1", "monster_grunt");
 	idVec3		normal, endpos;
 	int			removeTime;
 

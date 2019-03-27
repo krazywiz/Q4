@@ -269,7 +269,7 @@ public:
 
 class idPlayer : public idActor {
 public:
-
+	void					Event_GetCurrentWeapon(void);
  	enum {
  		EVENT_IMPULSE = idEntity::EVENT_MAXEVENTS,
  		EVENT_EXIT_TELEPORTER,
@@ -1069,8 +1069,9 @@ private:
 	void					Event_SetViewAngles			( const idVec3 &vec );
 	void					Event_StopFxFov				( void );
 	void					Event_EnableWeapon			( void );
-	void					Event_DisableWeapon			( void );
-	void					Event_GetCurrentWeapon		( void );
+	void					Event_DisableWeapon			(void);
+
+	
 	void					Event_GetPreviousWeapon		( void );
 	void					Event_SelectWeapon			( const char *weaponName );
 	void					Event_GetWeaponEntity		( void );
@@ -1324,7 +1325,7 @@ ID_INLINE int idPlayer::GetArena( void ) const {
 }
 
 ID_INLINE bool idPlayer::CanFire( void ) const {
-	return flagCanFire;
+	return true; //was return flagCanFire
 }
 
 #endif /* !__GAME_PLAYER_H__ */

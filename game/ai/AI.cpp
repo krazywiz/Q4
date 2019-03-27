@@ -160,13 +160,13 @@ idAI::~idAI() {
 }
 /*
 =====================
-idAI::change stuff 
+idAI::changeTeam 
 =====================
 */
 void idAI::changeTeam()
 {
 
-	idAI::team = AITEAM_TAPPED;
+	this->team = AITEAM_TAPPED;
 }
 
 
@@ -1544,10 +1544,30 @@ void idAI::AdjustHealthByDamage	( int damage ) {
 idAI::Pain
 =====================
 */
+
 bool idAI::Pain( idEntity *inflictor, idEntity *attacker, int damage, const idVec3 &dir, int location ) {
 	aifl.pain   = idActor::Pain( inflictor, attacker, damage, dir, location );
 	aifl.damage = true;
+	
+	idPlayer* player = gameLocal.GetLocalPlayer();
+	if (attacker == player)
+	{
+		if (player->GetCurrentWeapon() == 0)
+		{
+			common->Printf("blaster");
+			this->team = AITEAM_TAPPED;
+			//player->team = AITEAM_TAPPED;
+		}
+		else if(player->GetCurrentWeapon() == 7)
+		{
+			
+			//this->aifl.dead =1;
+			this->Event_BecomePassive(true);
+			common->Printf("freeze\n");
+			//player->team = AITEAM_TAPPED;
+		}
 
+	}
 	// force a blink
 	blink_time = 0;
 
@@ -1936,6 +1956,7 @@ idAI::TouchedByFlashlight
 void idAI::TouchedByFlashlight( idActor *flashlight_owner ) {
 	if ( RespondToFlashlight() ) {
 		Activate( flashlight_owner );
+		
 	}
 }
 
@@ -1982,7 +2003,7 @@ void idAI::UpdateEnemyPosition ( bool forceUpdate ) {
 	if( !enemy.ent || (!enemy.fl.visible && !forceUpdate) ) {
 		return;
 	}
-
+	
 	idActor*  enemyActor = dynamic_cast<idActor*>(enemy.ent.GetEntity());
 	idEntity* enemyEnt   = static_cast<idEntity*>(enemy.ent.GetEntity());
 
@@ -3677,40 +3698,44 @@ idAI::
 ============
 */
 
-void idAI::OnDeath( void ){
-	if( vehicleController.IsDriving() ){
+void idAI::OnDeath(void){
+	if (vehicleController.IsDriving()){
 		usercmd_t				usercmd;
 
-		memset( &usercmd, 0, sizeof( usercmd ) );
+		memset(&usercmd, 0, sizeof(usercmd));
 		usercmd.buttons = BUTTON_ATTACK;
 		usercmd.upmove = 300.0f; // This will cause the character to eject.
 
-		vehicleController.SetInput( usercmd, idAngles( 0, 0, 0 ) );
+		vehicleController.SetInput(usercmd, idAngles(0, 0, 0));
 
 		// Fixme!  Is this safe to do immediately?
 		vehicleController.Eject();
 	}
 
-	aiManager.RemoveTeammate ( this );
+	aiManager.RemoveTeammate(this);
 
-	ExecScriptFunction( funcs.death );
+	ExecScriptFunction(funcs.death);
 
-/* DONT DROP ANYTHING FOR NOW
-	float rVal = gameLocal.random.RandomInt( 100 );
+	// DONT DROP ANYTHING FOR NOW
+	//float rVal = gameLocal.random.RandomInt( 100 );
+	//idPlayer* player = gameLocal.GetLocalPlayer();
+	//if( spawnArgs.GetFloat( "no_drops" ) >= 1.0 ){
+	//spawnArgs.Set( "def_dropsItem1", "" );
+	//}else{
+	// Fixme!  Better guys should drop better stuffs!  Make drops related to guy type?  Do something cooler here?
+	//if (player->GetCurrentWeapon() == 5) //Nail Gun spawns Grunts when killing enemies
+	//{
+	//if (rVal < 100)
+	//{	// Half of guys drop nothing?
+	//spawnArgs.Set("def_dropsItem1", "monster_grunt");
+	//}
+	//}
 
-	if( spawnArgs.GetFloat( "no_drops" ) >= 1.0 ){
-		spawnArgs.Set( "def_dropsItem1", "" );
-	}else{
-		// Fixme!  Better guys should drop better stuffs!  Make drops related to guy type?  Do something cooler here?
-		if( rVal < 25 ){	// Half of guys drop nothing?
-			spawnArgs.Set( "def_dropsItem1", "" );
-		}else if( rVal < 50 ){
-			spawnArgs.Set( "def_dropsItem1", "item_health_small" );
-		}
-	}
-*/
+	//}
+
+	
+	
 }
-
 /*
 ============
 idAI::OnWakeUp

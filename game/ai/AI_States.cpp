@@ -247,24 +247,9 @@ stateResult_t idAI::State_Combat ( const stateParms_t& parms ) {
 				PostState("State_CombatCover");
 				return SRESULT_DONE;
 			}
+		
 			
-			
-			if (player->IsZoomed())
-			{
-				player->team = !player->team;
-			}
-
-
-
-			if (player->DistanceTo(this) <= 150)
-			{
-				this->team = AITEAM_TAPPED;
-				this->health += 10;
-				player->team = AITEAM_TAPPED;
-			}
-
-
-			if (player->IsFlashlightOn())
+			else if (player->IsFlashlightOn())
 			{
 				//if (this->team == AITEAM_TAPPED)
 				//{
@@ -272,6 +257,23 @@ stateResult_t idAI::State_Combat ( const stateParms_t& parms ) {
 				return SRESULT_DONE;
 				//}
 			}
+			
+			if (player->IsZoomed())
+			{
+				player->team = AITEAM_MARINE;
+			}
+
+
+			
+			if (player->DistanceTo(this) <= 100)
+			{
+				this->team = AITEAM_TAPPED;
+				this->health += 10;
+				player->team = AITEAM_TAPPED;
+			}
+			
+
+		
 
 
 
@@ -303,6 +305,7 @@ enemy until the cover point is invalidated.
 */
 stateResult_t idAI::State_CombatCover ( const stateParms_t& parms ) {	
 	idPlayer* player = gameLocal.GetLocalPlayer();
+	
 	enum {
 		STAGE_MOVE,
 		STAGE_ATTACK,
@@ -324,15 +327,17 @@ stateResult_t idAI::State_CombatCover ( const stateParms_t& parms ) {
 			if ( UpdateAction ( ) ) {
 				return SRESULT_WAIT;
 			}
+			
 			return SRESULT_WAIT;
 
 		case STAGE_ATTACK:
 			// If we dont have a cover point anymore then just bail out
-			if ( !aasSensor->Reserved ( ) ) {
+			/*if ( !aasSensor->Reserved ( ) ) {
 				ForceTacticalUpdate ( );
 				UpdateTactical ( 0 );
 				return SRESULT_DONE_WAIT;
-			}		
+			}
+			*/
 			// Update tactical state occasionally
 			if ( UpdateTactical ( TACTICALUPDATE_COVERDELAY ) ) {
 				return SRESULT_DONE_WAIT;
@@ -351,10 +356,11 @@ stateResult_t idAI::State_CombatCover ( const stateParms_t& parms ) {
 			if ( UpdateAction ( ) ) {
 				return SRESULT_WAIT;
 			}
+		
 
 
 			
-
+			/*
 
 			if (player->DistanceTo(this) <= 150)
 			{
@@ -364,34 +370,21 @@ stateResult_t idAI::State_CombatCover ( const stateParms_t& parms ) {
 				PostState("State_CombatCover");
 				return SRESULT_DONE;
 			}
+			*/
 
 			if (player->IsZoomed())
 			{
-				player->team = !player->team;
-			}
-
-			if (player->IsCrouching())
-			{
-				PostState("State_Combat");
-				return SRESULT_DONE;
-			}
-
-			if (player->health <= 0)
-			{
+				player->team = AITEAM_MARINE;
 				
-				PostState("State_Killed");
-				return SRESULT_DONE;
 			}
+			
+			
+	
+			
+			
 
 
-			if (player->IsFlashlightOn())
-			{
-				//if (this->team == AITEAM_TAPPED)
-				//{
-					PostState("State_Burn");
-					return SRESULT_DONE;
-				//}
-			}
+			
 
 			return SRESULT_WAIT;
 	}
@@ -831,11 +824,12 @@ stateResult_t idAI::State_Dead ( const stateParms_t& parms ) {
 	} else {
 		//PostState ( "State_Remove" );      this ensure the corpses don't dissapear
 	}
-
+	
+	
 
 	if (player->IsCrouching())
 	{
-		//gameLocal.SpawnEntityDef(ygt)
+		
 
 			PostState("State_Remove");
 			player->health += 25;
