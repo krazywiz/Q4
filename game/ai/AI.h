@@ -483,7 +483,7 @@ public:
 
 public:
 	
-	void					tap();// turns tapped to true
+
 
 	idLinkList<idAI>		simpleThinkNode;
 
@@ -934,7 +934,7 @@ public:
 	void					SetScript						( const char* scriptName, const char* funcName );
 
 private:
-	bool tapped = false; //this is what turns the strog to my side
+	
 	bool					ScriptedBegin					( bool endWithIdle, bool allowDormant = false );
 	void					ScriptedEnd						( void );
 

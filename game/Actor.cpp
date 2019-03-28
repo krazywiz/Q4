@@ -3226,10 +3226,6 @@ void idActor::Event_IdleAnim( int channel, const char *animname ) {
 
 
 
-void idActor::changeTeam() //added this
-{
-	team = AITEAM_TAPPED;
-}
 
 /*
 ================

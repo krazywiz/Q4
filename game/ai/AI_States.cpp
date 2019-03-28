@@ -260,16 +260,17 @@ stateResult_t idAI::State_Combat ( const stateParms_t& parms ) {
 			
 			if (player->IsZoomed())
 			{
-				player->team = AITEAM_MARINE;
+				this->team = AITEAM_STROGG;
 			}
 
 
 			
 			if (player->DistanceTo(this) <= 100)
 			{
-				this->team = AITEAM_TAPPED;
+				this->team = AITEAM_MARINE;
 				this->health += 10;
-				player->team = AITEAM_TAPPED;
+				//this->aifl.dead = 1;
+				
 			}
 			
 
@@ -357,7 +358,14 @@ stateResult_t idAI::State_CombatCover ( const stateParms_t& parms ) {
 				return SRESULT_WAIT;
 			}
 		
-
+			if (player->IsFlashlightOn())
+			{
+				//if (this->team == AITEAM_TAPPED)
+				//{
+				PostState("State_Burn");
+				return SRESULT_DONE;
+				//}
+			}
 
 			
 			/*
@@ -374,7 +382,7 @@ stateResult_t idAI::State_CombatCover ( const stateParms_t& parms ) {
 
 			if (player->IsZoomed())
 			{
-				player->team = AITEAM_MARINE;
+				this->team = AITEAM_STROGG;
 				
 			}
 			
@@ -768,6 +776,7 @@ idAI::State_Killed
 ================
 */
 stateResult_t idAI::State_Killed ( const stateParms_t& parms ) {
+	idPlayer* player = gameLocal.GetLocalPlayer();
 	disablePain = true;
 
 	//quickburning subjects skip all this jazz
@@ -779,7 +788,8 @@ stateResult_t idAI::State_Killed ( const stateParms_t& parms ) {
 	// Make sure all animation stops
 	StopAnimState ( ANIMCHANNEL_TORSO );
 	StopAnimState ( ANIMCHANNEL_LEGS );
-	if ( head ) {
+	if ( head ) 
+	{
 		StopAnimState ( ANIMCHANNEL_HEAD );
 	}
 
@@ -788,7 +798,10 @@ stateResult_t idAI::State_Killed ( const stateParms_t& parms ) {
 
 	if( spawnArgs.GetBool ( "remove_on_death" )  ){
 		//PostState ( "State_Remove" );
-	} else { 
+	} 
+	
+	else
+	{ 
 		PostState ( "State_Dead" );
 	}
 	

@@ -43,11 +43,11 @@ idAI::idAI
 */
 idAI::idAI ( void ) {
 	projectile_height_to_distance_ratio = 1.0f;
-	tapped					= false; // I added this
+	
 	aas						= NULL;
 	aasSensor				= NULL;
 	aasFind					= NULL;
-	team = AITEAM_TAPPED;
+	
 	lastHitCheckResult		= false;
 	lastHitCheckTime		= 0;
 	lastAttackTime			= 0;
@@ -166,7 +166,7 @@ idAI::changeTeam
 void idAI::changeTeam()
 {
 
-	this->team = AITEAM_TAPPED;
+	this->team = AITEAM_MARINE;
 }
 
 
@@ -1548,15 +1548,16 @@ idAI::Pain
 bool idAI::Pain( idEntity *inflictor, idEntity *attacker, int damage, const idVec3 &dir, int location ) {
 	aifl.pain   = idActor::Pain( inflictor, attacker, damage, dir, location );
 	aifl.damage = true;
-	
+	common->Printf("I feel pain\n");
 	idPlayer* player = gameLocal.GetLocalPlayer();
 	if (attacker == player)
 	{
 		if (player->GetCurrentWeapon() == 0)
 		{
 			common->Printf("blaster");
-			this->team = AITEAM_TAPPED;
-			//player->team = AITEAM_TAPPED;
+			this->team = AITEAM_MARINE;
+			
+			
 		}
 		else if(player->GetCurrentWeapon() == 7)
 		{
@@ -1564,9 +1565,23 @@ bool idAI::Pain( idEntity *inflictor, idEntity *attacker, int damage, const idVe
 			//this->aifl.dead =1;
 			this->Event_BecomePassive(true);
 			common->Printf("freeze\n");
-			//player->team = AITEAM_TAPPED;
+			
 		}
 
+		else if (player->GetCurrentWeapon() == 3)
+		{
+
+			//this->aifl.dead =1;
+			this->aifl.undying = 1;
+			
+		}
+		else if (player->GetCurrentWeapon() == 11)
+		{
+
+			//this->aifl.dead =1;
+			this->SetState("State_Remove");
+			
+		}
 	}
 	// force a blink
 	blink_time = 0;
@@ -3718,17 +3733,25 @@ void idAI::OnDeath(void){
 
 	// DONT DROP ANYTHING FOR NOW
 	//float rVal = gameLocal.random.RandomInt( 100 );
-	//idPlayer* player = gameLocal.GetLocalPlayer();
+	idPlayer* player = gameLocal.GetLocalPlayer();
 	//if( spawnArgs.GetFloat( "no_drops" ) >= 1.0 ){
 	//spawnArgs.Set( "def_dropsItem1", "" );
 	//}else{
 	// Fixme!  Better guys should drop better stuffs!  Make drops related to guy type?  Do something cooler here?
-	//if (player->GetCurrentWeapon() == 5) //Nail Gun spawns Grunts when killing enemies
-	//{
+	if (player->GetCurrentWeapon() == 5) //Nail Gun spawns Grunts when killing enemies
+	{
 	//if (rVal < 100)
 	//{	// Half of guys drop nothing?
-	//spawnArgs.Set("def_dropsItem1", "monster_grunt");
-	//}
+	spawnArgs.Set("def_dropsItem1", "monster_grunt");
+	
+	}
+	if (player->GetCurrentWeapon() == 4) //Nail Gun spawns Grunts when killing enemies
+	{
+		//if (rVal < 100)
+		//{	// Half of guys drop nothing?
+		spawnArgs.Set("def_dropsItem1", "char_marine");
+
+	}
 	//}
 
 	//}
@@ -5191,7 +5214,3 @@ bool idAI::CheckDeathCausesMissionFailure( void )
 	return false;
 }
 
-void idAI::tap()
-{
-	tapped = true;
-	}

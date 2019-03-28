@@ -147,7 +147,7 @@ public:
 	idActor*			GetAllyTeam				( aiTeam_t team );
 	idActor*			GetEnemyTeam			( aiTeam_t team );	
 
-	void				changeEnemyTeam			(idActor newTapped); //added this 
+	
 
 	idActor*			NearestTeammateToPoint	( idActor* from, idVec3 point, bool nonPlayer = false, float maxRange = 1000.0f, bool checkFOV = false, bool checkLOS = false );
 	idEntity*			NearestTeammateEnemy	( idActor* from, float maxRange=1000.0f, bool checkFOV = false, bool checkLOS = false, idActor** ally = NULL );
